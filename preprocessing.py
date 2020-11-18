@@ -136,7 +136,7 @@ def filter_repeated_puctuation(tweets):
     Returns: 
         tweet (string) : tweet with numbers removed
     """
-    return tweets.str.replace(r'([^a-zA-Z0-9 \n]\s?)\1+', r'\1' + ' <emphasize> ', case=False)
+    return tweets.str.replace(r'([?!]\s?)\1+', r'\1' + ' <emphasize> ', case=False)
 
 def filter_kisses(tweets):
     """Replace variations of xx with <kisses>
@@ -161,14 +161,19 @@ def filter_haha(tweets):
     return tweets.str.replace('haha[ha]*|ahah[ah]*', '<lolexpr>', case=False)   
 
 def filter_single_characters(tweets):
-    """Filters numbers from a tweet and replaces them with <number>
+    """Filters single characters and (possibly repeated) full stops from a tweet.
     
     Args: 
         tweet (string)
     Returns: 
         tweet (string) : tweet with numbers removed
     """
-    return tweets.str.replace(r'(\s[^?!](\s[^?!])*\s)', ' ', case=False)
+    tweets = tweets.str.replace(r'(\s[^?!](\s[^?!])*\s)', ' ', case=False)
+    tweets = tweets.str.replace(r'(\s[^?!]$)', '', case=False) # end
+    tweets = tweets.str.replace(r'(^[^?!]\s)', '', case=False) # start
+    tweets = tweets.str.replace(r'(\.\.$)', '', case=False) # dots at the and
+    
+    return tweets
 
 def filter_extra_letters(tweets): 
     """Function to replace multiple [3+ times] occurrences   
