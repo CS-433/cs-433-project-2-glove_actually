@@ -1,0 +1,8 @@
+# Datasets
+data/
+
+# IPython notebook checkpoints
+**/.ipynb_checkpoints/
+
+# IPython notebook cache
+**/__pycache__/
