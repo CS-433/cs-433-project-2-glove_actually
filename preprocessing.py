@@ -89,12 +89,12 @@ def filter_emojis(tweets):
     tweets = tweets.str.replace(r':p', '<laughface>', case=False)
     tweets = tweets.str.replace(r';p', '<laughface>', case=False)
     tweets = tweets.str.replace(r':\'\)', '<smile>', case=False)
-    tweets = tweets.str.replace(r'^[l]+[m]+?[a]+?[o]+$', '<laugh>', case=False)
+    tweets = tweets.str.replace(r'\b[l]+[m]+?[a]+?[o]+\b', '<laugh>', case=False)
     tweets = tweets.str.replace(r': >', '<smile>', case=False)
-    tweets = tweets.str.replace(r'^[l]+[o]+?[l]+?[s]*$', '<lolexpr>', case=False)
+    tweets = tweets.str.replace(r'\b[l]+[o]+?[l]+?[s]*\b', '<lolexpr>', case=False)
     tweets = tweets.str.replace(r':/', '<sadface>', case=False)
     tweets = tweets.str.replace(r'> . <', '<sadface>', case=False)
-    tweets = tweets.str.replace(r'^[o]+[m]+?[g]+?$', '<omg>', case=False)
+    tweets = tweets.str.replace(r'\b[o]+[m]+?[g]+?\b', '<omg>', case=False)
     
     return tweets
 
