@@ -60,7 +60,30 @@ def glove_pretrained(path):
             
     return embeddings
     
+def map_glove(tweets, embeddings):
+    """
+    Maps tweet tokens to embeddings and takes their average.
     
+    Args: 
+    tweets (pandas series): tweet bodies as strings
+    embeddings (dictionary): the keys are tokens and values are the vector embeddings
+    
+    Returns: 
+    features (numpy array): resulting features obtained by averaging the individual embeddings
+            of each token in a tweet
+    """
+    
+    n = len(list(embeddings.values())[0])
+    notfound = np.zeros(n)
+    
+    features = []
+    
+    for tweet in tweets:
+        vecs = [embeddings.get(word, notfound) for word in tweet.split()]
+        features.append(np.mean(vecs, axis = 0) if len(vecs) > 0 else notfound)
+        
+    return np.array(features)
+                       
     
     
     
