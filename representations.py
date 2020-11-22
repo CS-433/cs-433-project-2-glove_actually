@@ -1,4 +1,5 @@
 import nltk
+import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
@@ -22,16 +23,44 @@ def get_vocabulary(tweets, thres = 5):
     
     return vocab_cut.index.tolist()
 
-def bag_of_words():
-    raise NotImplementedError
+def bag_of_words(tweets):
+    vec = CountVectorizer(analyzer = 'word')  
+    features = vec.fit_transform(tweets)
+    return features
     
 
-def tf_idf():
-    raise NotImplementedError
+def tf_idf(tweets):
+    tf = TfidfVectorizer(analyzer = 'word', ngram_range=(1,1), min_df = 1)
+    features = tf.fit_transform(tweets)
+    return features
     
-
 def glove():
     raise NotImplementedError
     
-def glove_pretrained():
-    raise NotImplementedError
+def glove_pretrained(path):
+    """
+    Loads pre-trained GloVe embeddings from a file.
+    
+    Args: 
+    path (string): filename
+    
+    Returns: 
+    embeddings (dictionary): dictionary where the keys are the words and
+                the vector embeddings are the values
+    """
+
+    embeddings = {} 
+    
+    with open(path) as file:
+        for line in file:
+            values = line.split()
+            word = values[0]
+            vector = np.asarray(values[1:], "float32")
+            embeddings[word] = vector
+            
+    return embeddings
+    
+    
+    
+    
+    
