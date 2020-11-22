@@ -24,13 +24,13 @@ def get_vocabulary(tweets, thres = 5):
     return vocab_cut.index.tolist()
 
 def bag_of_words(tweets):
-    vec = CountVectorizer(analyzer = 'word')  
+    vec = CountVectorizer(analyzer = 'word', max_features = 10000)  
     features = vec.fit_transform(tweets)
     return features
     
 
 def tf_idf(tweets):
-    tf = TfidfVectorizer(analyzer = 'word', ngram_range=(1,1), min_df = 1)
+    tf = TfidfVectorizer(analyzer = 'word', ngram_range=(1,1), min_df = 1, max_features = 10000)
     features = tf.fit_transform(tweets)
     return features
     
