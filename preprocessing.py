@@ -334,7 +334,7 @@ def drop_stopwords(tweets):
     return tweets.apply(lambda tweet: ' '.join([w for w in tweet.split() if not w.lower() in stops]))
 
 def preprocess_data(tweets):
-    """Calls appropriate functions to preprocess tweets
+    """Calls appropriate functions to preprocess tweets.
     
     Args:
         tweets (pandas series) : strings of tweets
