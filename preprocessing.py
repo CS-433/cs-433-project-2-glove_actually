@@ -83,19 +83,19 @@ def filter_emojis(tweets):
     """
     # Replace emojis with tags
     tweets = tweets.str.replace(r'<3', ' <love> ', case=False)
-    tweets = tweets.str.replace(r':\*', '<kiss>', case=False)
-    tweets = tweets.str.replace(r':d', '<laughface>', case=False)
-    tweets = tweets.str.replace(r';d', '<laughface>', case=False)
-    tweets = tweets.str.replace(r':p', '<laughface>', case=False)
-    tweets = tweets.str.replace(r';p', '<laughface>', case=False)
-    tweets = tweets.str.replace(r':[\']?\)', '<smile>', case=False)
+    tweets = tweets.str.replace(r' :\* ', ' <kiss> ', case=False)
+    tweets = tweets.str.replace(r' :d ', ' <laughface> ', case=False)
+    tweets = tweets.str.replace(r' ;d ', ' <laughface> ', case=False)
+    tweets = tweets.str.replace(r' :p ', ' <laughface> ', case=False)
+    tweets = tweets.str.replace(r' ;p ', ' <laughface> ', case=False)
+    tweets = tweets.str.replace(r'[:=][\']?[\-]?[\)\]]', ' <smile> ', case=False)
     tweets = tweets.str.replace(r'\b[l]+[m]+?[a]+?[o]+\b', '<laugh>', case=False)
-    tweets = tweets.str.replace(r': >', '<smile>', case=False)
-    tweets = tweets.str.replace(r'\b[l]+[o]+?[l]+?[s]*\b', '<lolexpr>', case=False)
-    tweets = tweets.str.replace(r':/', '<sadface>', case=False)
-    tweets = tweets.str.replace(r':[\']?[\-]?\(', '<sadface>', case=False)
-    tweets = tweets.str.replace(r'> . <', '<sadface>', case=False)
-    tweets = tweets.str.replace(r'\b[o]+[m]+?[g]+?\b', '<omg>', case=False)
+    tweets = tweets.str.replace(r' : > ', ' <smile> ', case=False)
+    tweets = tweets.str.replace(r'\b[l]+[o]+?[l]+?[s]*\b', ' <lolexpr> ', case=False)
+    tweets = tweets.str.replace(r'[:=]/', ' <sadface> ', case=False)
+    tweets = tweets.str.replace(r'[:=][\']?[\-]?[\)\[]', ' <sadface> ', case=False)
+    tweets = tweets.str.replace(r'\b > . <', '<sadface>', case=False)
+    tweets = tweets.str.replace(r'\b[o]+[m]+?[g]+?\b', ' <omg> ', case=False)
     
     return tweets
 
@@ -147,7 +147,10 @@ def filter_kisses(tweets):
     Returns: 
         tweets (pandas series) : strings of tweets with multiple whitespaces removed
     """
-    return tweets.str.replace(r'([x])\1+', '<kisses>', case=False)
+    tweets = tweets.str.replace(r'\b([x])\1+\b', ' <kisses> ', case=False)
+    tweets = tweets.str.replace(r'[o]?([x][o])\1+', ' <kisses> ', case=False)
+    
+    return tweets
 
 
 def filter_haha(tweets):
@@ -159,7 +162,7 @@ def filter_haha(tweets):
         tweets (pandas series) : strings of tweets with laughs replaced with <lolexpr>
     """
 
-    return tweets.str.replace('haha[ha]*|ahah[ah]*', '<lolexpr>', case=False)   
+    return tweets.str.replace('haha[ha]*|ahah[ah]*', ' <lolexpr> ', case=False)   
 
 def filter_single_characters(tweets):
     """Filters single characters and (possibly repeated) full stops from a tweet.
@@ -263,7 +266,7 @@ def filter_hashtags(tweets):
         tweets (pandas series) : strings of tweets with hashtags replaced
     """
 
-    return tweets.str.replace('#', '<hashtag> ', case=False)
+    return tweets.str.replace('#', ' <hashtag> ', case=False)
 
 def lemmatize(tweet):
     """Lemmatizes a tweet (e.g. tried -> try)

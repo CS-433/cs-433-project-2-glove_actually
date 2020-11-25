@@ -1,10 +1,11 @@
 import nltk
+import os
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-def get_vocabulary(tweets, thres = 5):
-    """
+"""def get_vocabulary(tweets, thres = 5):
+    
     Builds a vocabulary of words that occur at least 5 times.
     
     Args:
@@ -13,7 +14,7 @@ def get_vocabulary(tweets, thres = 5):
     
     Returns:
     vocab ():
-    """
+   
     # imlementation using CountVectorizer is much faster
     vec = CountVectorizer()  
     words = vec.fit_transform(tweets)
@@ -22,6 +23,8 @@ def get_vocabulary(tweets, thres = 5):
     vocab_cut = vocab[vocab.freq >= thres]
     
     return vocab_cut.index.tolist()
+    
+"""
 
 def bag_of_words(tweets):
     vec = CountVectorizer(analyzer = 'word', max_features = 10000)  
@@ -34,8 +37,12 @@ def tf_idf(tweets):
     features = tf.fit_transform(tweets)
     return features
     
-def glove():
-    raise NotImplementedError
+def glove(filename):
+    os.system('./utils/build_vocab.sh ' + filename)
+    os.system('./utils/cut_vocab.sh')
+    os.system('python3 ./utils/pickle_vocab.py')
+    os.system('python3 ./utils/cooc.py ' + filename)
+    return 
     
 def glove_pretrained(path):
     """
