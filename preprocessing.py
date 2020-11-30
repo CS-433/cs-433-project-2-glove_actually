@@ -83,18 +83,19 @@ def filter_emojis(tweets):
     """
     # Replace emojis with tags
     tweets = tweets.str.replace(r'<3', ' <love> ', case=False)
-    tweets = tweets.str.replace(r':\*', '<kiss>', case=False)
-    tweets = tweets.str.replace(r':d', '<laughface>', case=False)
-    tweets = tweets.str.replace(r';d', '<laughface>', case=False)
-    tweets = tweets.str.replace(r':p', '<laughface>', case=False)
-    tweets = tweets.str.replace(r';p', '<laughface>', case=False)
-    tweets = tweets.str.replace(r':\'\)', '<smile>', case=False)
+    tweets = tweets.str.replace(r' :\* ', ' <kiss> ', case=False)
+    tweets = tweets.str.replace(r' :d ', ' <laughface> ', case=False)
+    tweets = tweets.str.replace(r' ;d ', ' <laughface> ', case=False)
+    tweets = tweets.str.replace(r' :p ', ' <laughface> ', case=False)
+    tweets = tweets.str.replace(r' ;p ', ' <laughface> ', case=False)
+    tweets = tweets.str.replace(r'[:=][\']?[\-]?[\)\]]', ' <smile> ', case=False)
     tweets = tweets.str.replace(r'\b[l]+[m]+?[a]+?[o]+\b', '<laugh>', case=False)
-    tweets = tweets.str.replace(r': >', '<smile>', case=False)
-    tweets = tweets.str.replace(r'\b[l]+[o]+?[l]+?[s]*\b', '<lolexpr>', case=False)
-    tweets = tweets.str.replace(r':/', '<sadface>', case=False)
-    tweets = tweets.str.replace(r'> . <', '<sadface>', case=False)
-    tweets = tweets.str.replace(r'\b[o]+[m]+?[g]+?\b', '<omg>', case=False)
+    tweets = tweets.str.replace(r' : > ', ' <smile> ', case=False)
+    tweets = tweets.str.replace(r'\b[l]+[o]+?[l]+?[s]*\b', ' <lolexpr> ', case=False)
+    tweets = tweets.str.replace(r'[:=]/', ' <sadface> ', case=False)
+    tweets = tweets.str.replace(r'[:=][\']?[\-]?[\)\[]', ' <sadface> ', case=False)
+    tweets = tweets.str.replace(r'\b > . <', '<sadface>', case=False)
+    tweets = tweets.str.replace(r'\b[o]+[m]+?[g]+?\b', ' <omg> ', case=False)
     
     return tweets
 
@@ -146,7 +147,10 @@ def filter_kisses(tweets):
     Returns: 
         tweets (pandas series) : strings of tweets with multiple whitespaces removed
     """
-    return tweets.str.replace(r'([x])\1+', '<kisses>', case=False)
+    tweets = tweets.str.replace(r'\b([x])\1+\b', ' <kisses> ', case=False)
+    tweets = tweets.str.replace(r'[o]?([x][o])\1+', ' <kisses> ', case=False)
+    
+    return tweets
 
 
 def filter_haha(tweets):
@@ -158,7 +162,7 @@ def filter_haha(tweets):
         tweets (pandas series) : strings of tweets with laughs replaced with <lolexpr>
     """
 
-    return tweets.str.replace('haha[ha]*|ahah[ah]*', '<lolexpr>', case=False)   
+    return tweets.str.replace('haha[ha]*|ahah[ah]*', ' <lolexpr> ', case=False)   
 
 def filter_single_characters(tweets):
     """Filters single characters and (possibly repeated) full stops from a tweet.
@@ -234,16 +238,16 @@ def expand_contractions(tweets):
         'wouldnt': 'would not',
         'havent': 'have not',
         'im': 'i am',
-        'hes': 'he is',
-        ' ive': 'i have',
+        '\b hes \b': 'he is',
+        '\b ive \b': 'i have',
         'youre': 'you are',
         'youve': 'you have',
         'dont': 'do not',
-        ' weve': 'we have',
+        '\b weve \b': 'we have',
         'theyre': 'they are',
         'theyve': 'they have',
         'dunno': 'do not know',
-        'ill': 'i will',
+        ' ill ': ' i will ',
         'youll': 'you will',
         'theyll': 'they will',
     }
@@ -262,7 +266,7 @@ def filter_hashtags(tweets):
         tweets (pandas series) : strings of tweets with hashtags replaced
     """
 
-    return tweets.str.replace('#', '<hashtag> ', case=False)
+    return tweets.str.replace('#', ' <hashtag> ', case=False)
 
 def lemmatize(tweet):
     """Lemmatizes a tweet (e.g. tried -> try)
@@ -279,6 +283,39 @@ def lemmatize(tweet):
         else:
             lemma = lemmatizer.lemmatize(word, t)
         out.append(lemma)
+        
+    return ' '.join(out)  
+
+def lemmatize_with_tokenizer(tweet):
+    """Lemmatizes a tweet (e.g. tried -> try) using the nltk tokenizer
+    Args: 
+        tweet (string)
+    Returns: 
+        tweet (string) : tweet where the words have been lemmatized
+    """
+    out = []
+    skip_next = False
+
+    tagged_tokens = pos_tag(word_tokenize(tweet))
+
+    for i, (token, tag) in enumerate(tagged_tokens):
+        if skip_next:
+            skip_next = False
+            continue
+        t = tag[0].lower() if tag[0] in ['A', 'R', 'N', 'V'] else None
+        if (i > 0) & (i < (len(tagged_tokens) - 1)):
+            if (tagged_tokens[i-1][0] == '<') & (tagged_tokens[i+1][0] == '>'):
+                out = out[:-1]   # remove the previous token (<)
+                out.append('<' + token +'>')   # add back tag
+                skip_next = True   # skip the next token (>)
+                continue
+        if (t == None):
+            out.append(token)
+            skip_next = False
+        else:
+            lemma = lemmatizer.lemmatize(token, t)
+            out.append(lemma)
+            skip_next = False
         
     return ' '.join(out)
 
@@ -300,7 +337,7 @@ def drop_stopwords(tweets):
     return tweets.apply(lambda tweet: ' '.join([w for w in tweet.split() if not w.lower() in stops]))
 
 def preprocess_data(tweets):
-    """Calls appropriate functions to preprocess tweets
+    """Calls appropriate functions to preprocess tweets.
     
     Args:
         tweets (pandas series) : strings of tweets
@@ -315,7 +352,6 @@ def preprocess_data(tweets):
     tweets = filter_emojis(tweets)
     tweets = filter_comma(tweets)
     tweets = filter_extra_letters(tweets)
-    tweets = filter_multi_whitespace(tweets)
     tweets = filter_haha(tweets)
     tweets = expand_contractions(tweets)
     tweets = filter_kisses(tweets)
@@ -325,5 +361,6 @@ def preprocess_data(tweets):
     tweets = tweets.apply(lambda tweet: filter_numbers(tweet)) # run after emoji filtering
     tweets = filter_words_with_numbers(tweets) # needs to run after number filtering
     tweets = filter_single_characters(tweets) # run last
+    tweets = filter_multi_whitespace(tweets)
     
     return tweets
