@@ -46,9 +46,9 @@ def load_data(full = True):
     return tweets, test
 
 
-def reindex_df(df):
+def reindex_dfs(CREATE_SUBMISSION, train, val, test):
     """
-    Reindexes a given dataframe for the FastText format (i.e. label first, body second)
+    Reindexes a given dataframes for the FastText format (i.e. label first, body second)
     
     Args:
     df (pandas dataframe): tweets with columns indexed as ['body', 'label']
@@ -58,9 +58,14 @@ def reindex_df(df):
     """
     
     columnsTitles = ['label', 'body'] 
-    df_reindexed = df.reindex(columns=columnsTitles)
     
-    return df_reindexed
+    train = train.reindex(columns=columnsTitles)
+    val = val.reindex(columns=columnsTitles)
+    
+    if CREATE_SUBMISSION == True:
+        test = test.reindex(columns=columnsTitles)
+        
+    return train, val, test
 
 
 def train_val_split(attr,label,val_size,random_state):
@@ -87,3 +92,51 @@ def train_val_split(attr,label,val_size,random_state):
     return train, val
 
 
+def create_csv_submission(model, test, filename):
+    # Make the predictions line by line and store them in the list of predictions
+    predictions=[]
+    
+    for line in test['body']:
+        pred_label=model.predict(line, k=-1, threshold=0.5)[0][0]
+        predictions.append(pred_label)
+
+    # Add the list to the dataframe
+    test['Id'] = test.index + 1
+    test['Prediction'] = predictions
+
+    # Convert labels back to -1's and 1's
+    test['Prediction'] = test['Prediction'].str.replace('__label__sadface','-1')
+    test['Prediction'] = test['Prediction'].str.replace('__label__happyface','1')
+    test = test[['Id', 'Prediction']]
+     
+    # Save dataframe into csv    
+    test.to_csv(filename, sep=",", index=False)
+    
+
+def get_prediction_probabilities(model, val):
+    # Make the predictions line by line and store them in the list of predictions and probabilities
+    predictions=[]
+    probabilities=[]
+    
+    for line in val['body']:
+        pred_label=model.predict(line, k=3, threshold=0.5)[0][0]
+        results = model.predict(line, k=3, threshold=0.5)
+
+        predictions.append(pred_label)
+        probabilities.append(results[1][0])
+        
+    return predictions, probabilities
+
+
+def save_txt(train, val, test, SUBMISSION_POSTFIX, CREATE_SUBMISSION):
+    TRAIN_TXT = r'train' + SUBMISSION_POSTFIX + '.txt'
+    VAL_TXT = r'val' + SUBMISSION_POSTFIX + '.txt'
+    TEST_TXT = r'test' + SUBMISSION_POSTFIX + '.txt'
+
+    np.savetxt(TRAIN_TXT, train.values, fmt='%s')
+    np.savetxt(VAL_TXT, val.values, fmt='%s')
+
+    if CREATE_SUBMISSION == True:
+        np.savetxt(TEST_TXT, test.values, fmt='%s')
+        
+    return TRAIN_TXT, VAL_TXT, TEST_TXT
