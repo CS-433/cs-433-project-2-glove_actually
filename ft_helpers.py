@@ -93,6 +93,15 @@ def train_val_split(attr,label,val_size,random_state):
 
 
 def create_csv_submission(model, test, filename):
+    """
+    Creates the csv submission file for AICrowd, where the first column is the Id and the second column is the Prediction [-1,1]
+    
+    Args:
+    model (fasttext model): Fasttext training model
+    test (pandas dataframe): test set
+    filename (string): file output name
+    """
+    
     # Make the predictions line by line and store them in the list of predictions
     predictions=[]
     
@@ -114,6 +123,19 @@ def create_csv_submission(model, test, filename):
     
 
 def get_prediction_probabilities(model, val):
+    """
+    Creates the csv submission file for AICrowd, where the first column is the Id and the second column is the Prediction [-1,1]
+    
+    Args:
+    model (fasttext model): Fasttext training model
+    test (pandas dataframe): test set
+    filename (string): file output name
+    
+    Returns:
+    predictions (int): binary predictions for each entry [-1,1]
+    probabilities (float): prediction probabilities for each entry 
+    """
+    
     # Make the predictions line by line and store them in the list of predictions and probabilities
     predictions=[]
     probabilities=[]
@@ -129,6 +151,21 @@ def get_prediction_probabilities(model, val):
 
 
 def save_txt(train, val, test, SUBMISSION_POSTFIX, CREATE_SUBMISSION):
+    """
+    Saves the train, val, and test sets into .txt files (required for fasttext)
+    
+    Args:
+    train (pandas dataframe): train set
+    val (pandas dataframe): validation set
+    test (pandas dataframe): test set
+    SUBMISSION_POSTFIX (string): postfix of the .csv 
+    CREATE_SUBMISSION (boolean): If False, does not create the .txt file for the test set
+    
+    Returns:
+    predictions (int): binary predictions for each entry [-1,1]
+    probabilities (float): prediction probabilities for each entry 
+    """
+    
     TRAIN_TXT = r'train' + SUBMISSION_POSTFIX + '.txt'
     VAL_TXT = r'val' + SUBMISSION_POSTFIX + '.txt'
     TEST_TXT = r'test' + SUBMISSION_POSTFIX + '.txt'
