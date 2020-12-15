@@ -124,7 +124,7 @@ def create_csv_submission(model, test, filename):
 
 def get_prediction_probabilities(model, val):
     """
-    Creates the csv submission file for AICrowd, where the first column is the Id and the second column is the Prediction [-1,1]
+    Returns the prediction probabilities for each tweet
     
     Args:
     model (fasttext model): Fasttext training model
