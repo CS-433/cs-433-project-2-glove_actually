@@ -122,7 +122,7 @@ def create_csv_submission(model, test, filename):
     test.to_csv(filename, sep=",", index=False)
     
 
-def get_prediction_probabilities(model, val):
+def create_probabilities_csv(model, test, filename):
     """
     Returns the prediction probabilities for each tweet
     
@@ -140,13 +140,26 @@ def get_prediction_probabilities(model, val):
     predictions=[]
     probabilities=[]
     
-    for line in val['body']:
+    for line in test['body']:
         pred_label=model.predict(line, k=3, threshold=0.5)[0][0]
         results = model.predict(line, k=3, threshold=0.5)
 
         predictions.append(pred_label)
         probabilities.append(results[1][0])
         
+    # Add the list to the dataframe
+    test['Id'] = test.index + 1
+    test['Prediction'] = predictions
+    test['Probability'] = probabilities
+
+    # Convert labels back to -1's and 1's
+    test['Prediction'] = test['Prediction'].str.replace('__label__sadface','-1')
+    test['Prediction'] = test['Prediction'].str.replace('__label__happyface','1')
+    test = test[['Id', 'Prediction', 'Probability']]    
+    
+    # Save dataframe into csv    
+    test.to_csv(filename, sep=",", index=False)
+    
     return predictions, probabilities
 
 
