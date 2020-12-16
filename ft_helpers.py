@@ -48,13 +48,18 @@ def load_data(full = True):
 
 def reindex_dfs(CREATE_SUBMISSION, train, val, test):
     """
-    Reindexes a given dataframes for the FastText format (i.e. label first, body second)
+    Reindexes given dataframes for the FastText format (i.e. label first, body second)
     
     Args:
-    df (pandas dataframe): tweets with columns indexed as ['body', 'label']
+    CREATE_SUBMISSION (boolean): If False, does not reindex the test set
+    train (pandas dataframe): tweets with columns indexed as ['body', 'label']
+    val (pandas dataframe): tweets with columns indexed as ['body', 'label']
+    test (pandas dataframe): tweets with columns indexed as ['body', 'label']
     
     Returns:
-    df_reindexed (pandas dataframe): tweets with columns indexed as ['body', 'label']
+    train (pandas dataframe): tweets with columns indexed as ['label', 'body']
+    val (pandas dataframe): tweets with columns indexed as ['label', 'body']
+    test (pandas dataframe): tweets with columns indexed as ['label', 'body']
     """
     
     columnsTitles = ['label', 'body'] 
@@ -94,7 +99,7 @@ def train_val_split(attr,label,val_size,random_state):
 
 def create_csv_submission(model, test, filename):
     """
-    Creates the csv submission file for AICrowd, where the first column is the Id and the second column is the Prediction [-1,1]
+    Creates the .csv submission file for AICrowd, where the first column is the Id and the second column is the Prediction [-1,1]
     
     Args:
     model (fasttext model): Fasttext training model
@@ -124,16 +129,12 @@ def create_csv_submission(model, test, filename):
 
 def create_probabilities_csv(model, test, filename):
     """
-    Returns the prediction probabilities for each tweet
+    Creates a .csv file with the predictions and their probabilties
     
     Args:
-    model (fasttext model): Fasttext training model
+    model (fasttext model): fasttext training model
     test (pandas dataframe): test set
     filename (string): file output name
-    
-    Returns:
-    predictions (int): binary predictions for each entry [-1,1]
-    probabilities (float): prediction probabilities for each entry 
     """
     
     # Make the predictions line by line and store them in the list of predictions and probabilities
@@ -191,7 +192,7 @@ def save_txt(train, val, test, SUBMISSION_POSTFIX, CREATE_SUBMISSION):
 
 
 def sign(vote_sum):
-     """
+    """
     Returns the majority vote of ensembles. If the sum of the predictions is negative, returns -1. Otherwise, returns 1.
     
     Args:
