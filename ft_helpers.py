@@ -159,8 +159,6 @@ def create_probabilities_csv(model, test, filename):
     
     # Save dataframe into csv    
     test.to_csv(filename, sep=",", index=False)
-    
-    return predictions, probabilities
 
 
 def save_txt(train, val, test, SUBMISSION_POSTFIX, CREATE_SUBMISSION):
@@ -190,3 +188,22 @@ def save_txt(train, val, test, SUBMISSION_POSTFIX, CREATE_SUBMISSION):
         np.savetxt(TEST_TXT, test.values, fmt='%s')
         
     return TRAIN_TXT, VAL_TXT, TEST_TXT
+
+
+def sign(vote_sum):
+     """
+    Returns the majority vote of ensembles. If the sum of the predictions is negative, returns -1. Otherwise, returns 1.
+    
+    Args:
+    vote_sum (float): sum of the votes of the ensemble models
+    
+    Returns:
+    vote_sum (int): sum of the votes of the ensemble models as predictions
+    """
+        
+    if(vote_sum < 0): 
+        vote_sum = -1
+    else:
+        vote_sum = 1
+        
+    return vote_sum
