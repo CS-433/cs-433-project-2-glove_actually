@@ -61,7 +61,7 @@ This repository contains code used for building a classifier for text sentiment 
 
 ### File description
 
-- `reprocessed_tweets.txt`, `preprocessed_tweets_full.txt`, `preprocessed_tweets_test.txt`: tweets from the development set, full dataset and test set respectivelt which have been pre-processed
+- `preprocessed_tweets.txt`, `preprocessed_tweets_full.txt`, `preprocessed_tweets_test.txt`: tweets from the development set, full dataset and test set respectivelt which have been pre-processed
 - `test_data.txt`: unlabelled tweets to be predicted
 - `train_neg.txt`, `train_neg_full.txt`: development and full set of negative tweets
 - `train_pos.txt`, `train_pos_full.txt`: development and full set of positive tweets
