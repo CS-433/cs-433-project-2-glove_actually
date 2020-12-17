@@ -42,7 +42,7 @@ This repository contains code used for building a classifier for text sentiment 
     │   ├── consts_glove.py
     │   ├── cooc.py
     │   ├── cut_vocab.sh
-    |		├── embeddings.txt
+    |   ├── embeddings.txt
     │   ├── glove_solution.py
     │   ├── pickle_vocab.py
     │   └── tmp
