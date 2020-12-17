@@ -1,56 +1,117 @@
 # Project Text Sentiment Classification
 
-The task of this competition is to predict if a tweet message used to contain a positive :) or negative :( smiley, by considering only the remaining text.
+This project was developed as part of the EPFL Machine Learning course (2020).
 
-As a baseline, we here provide sample code using word embeddings to build a text classifier system.
+## Authors
+- Marie Biolková
+- Sena Necla Cetin
+- Robert Pieniuta
 
-Submission system environment setup:
+## Summary
+This repository contains code used for building a classifier for text sentiment analysis. The task was performed on a large corpus of tweets where the goal was to determine whether the tweet contained a positive or negative smiley (before it was removed) from the remaining text. More information about the challenge and the data can be found [here](https://www.aicrowd.com/challenges/epfl-ml-text-classification).
 
-1. The dataset is available from the Kaggle page, as linked in the PDF project description
-
- Download the provided datasets `twitter-datasets.zip`.
-
-2. To submit your solution to the online evaluation system, we require you to prepare a “.csv” file of the same structure as sampleSubmission.csv (the order of the predictions does not matter, but make sure the tweet ids and predictions match). Your submission is evaluated according to the classification error (number of misclassified tweets) of your predictions.
-
-*Working with Twitter data:* We provide a large set of training tweets, one tweet per line. All tweets in the file train pos.txt (and the train pos full.txt counterpart) used to have positive smileys, those of train neg.txt used to have a negative smiley. Additionally, the file test data.txt contains 10’000 tweets without any labels, each line numbered by the tweet-id.
-
-Your task is to predict the labels of these tweets, and upload the predictions to kaggle. Your submission file for the 10’000 tweets must be of the form `<tweet-id>`, `<prediction>`, see `sampleSubmission.csv`.
-
-Note that all tweets have already been pre-processed so that all words (tokens) are separated by a single whitespace. Also, the smileys (labels) have been removed.
-
-## Classification using Word-Vectors
-
-For building a good text classifier, it is crucial to find a good feature representation of the input text. Here we will start by using the word vectors (word embeddings) of each word in the given tweet. For simplicity of a first baseline, we will construct the feature representation of the entire text by simply averaging the word vectors.
-
-Below is a solution pipeline with an evaluation step:
-
-### Generating Word Embeddings: 
-
-Load the training tweets given in `pos_train.txt`, `neg_train.txt` (or a suitable subset depending on RAM requirements), and construct a a vocabulary list of words appearing at least 5 times. This is done running the following commands. Note that the provided `cooc.py` script can take a few minutes to run, and displays the number of tweets processed.
-
-```bash
-build_vocab.sh
-cut_vocab.sh
-python3 pickle_vocab.py
-python3 cooc.py
+## File structure 
+```
+.
+├── README.md
+├── __init__.py
+├── data
+|   ├── preprocessed_tweets.txt
+|   ├── preprocessed_tweets_full.txt
+|   ├── preprocessed_tweets_test.txt
+|   ├── test_data.txt
+|   ├── train_neg.txt
+|   ├── train_neg_full.txt
+|   ├── train_pos.txt
+|   ├── train_pos_full.txt
+|   ├── weights_gru.pt
+|   └── weights_lstm.pt
+├── notebooks
+│   ├── bow-tfidf-baselines.ipynb
+│   ├── eda.ipynb
+│   ├── fasttext.ipynb
+│   ├── glove_base.ipynb
+│   └── test-preprocessing.ipynb
+└── src
+    ├── __init__.py
+    ├── consts.py
+    ├── ft_helpers.py
+    ├── get_embeddings.py
+    ├── glove
+    │   ├── build_vocab.sh
+    │   ├── consts_glove.py
+    │   ├── cooc.py
+    │   ├── cut_vocab.sh
+    |		├── embeddings.txt
+    │   ├── glove_solution.py
+    │   ├── pickle_vocab.py
+    │   └── tmp
+    │       ├── cooc.pkl
+    │       ├── vocab.pkl
+    │       ├── vocab_cut.txt
+    │       └── vocab_full.txt
+    ├── load.py
+    ├── predict_helpers.py
+    ├── preprocessing.py
+    ├── representations.py
+    ├── rnn.py
+    ├── rnn_classifier.py
+    └── run.py
 ```
 
+### File description
 
-Now given the co-occurrence matrix and the vocabulary, it is not hard to train GloVe word embeddings, that is to compute an embedding vector for wach word in the vocabulary. We suggest to implement SGD updates to train the matrix factorization, as in
+- `reprocessed_tweets.txt`, `preprocessed_tweets_full.txt`, `preprocessed_tweets_test.txt`: tweets from the development set, full dataset and test set respectivelt which have been pre-processed
+- `test_data.txt`: unlabelled tweets to be predicted
+- `train_neg.txt`, `train_neg_full.txt`: development and full set of negative tweets
+- `train_pos.txt`, `train_pos_full.txt`: development and full set of positive tweets
+- `weights_gru.pt`, `weights_lstm.pt`: weights of the best GRU and LSTM model 
+-  `bow-tfidf-baselines.ipynb`: code for exploration and tuning of baselines with Tf-Idf and Bag-of-Words
+- `eda.ipynb`: exploratory data analysis
+- `fasttext.ipynb`: exploration and tuning of fastText
+- `glove_base.ipynb`: code for exploration and tuning of baselines using GloVe embeddings
+- `test-preprocessing.ipynb`: test file to check whether preprocessing was done correctly
+- `consts.py`,`const_glove.py` : contain paths to files used
+- `ft_helpers.py`: helper files for fastText training
+- `get_embeddings.py`: executing this script from the command line will train GloVe embeddings on the preprocessed dataset 
+- `build_vocab.sh`, `cooc.py`, `cut_vocab.sh`, `pickle_vocab.py`, `glove_solution.py`: scripts for training GloVe embeddings;produce the `embeddings.txt` once executed
+- `cooc.pkl`, `vocab.pkl`, `vocab_cut.txt`, ` vocab_full.txt`: intermediate files for training GloVe embeddings
+-  `load.py`: helper files for loading datasets and outputing predictions
+- `predict_helpers.py`: helper files for making predictions for the best model
+- `preprocessing.py`: methods for preprocessing
+- `representations.py`: methods for generating and mapping GloVe embeddings
+- `rnn.py`: methods for training RNNs and predicting their outputs
+- `rnn_classifier.py`: defines the recurrent neural network class
+- `run.py`: script to produce our best submission
 
-```glove_solution.py```
 
-Once you tested your system on the small set of 10% of all tweets, we suggest you run on the full datasets `pos_train_full.txt`, `neg_train_full.txt`
 
-### Building a Text Classifier:
+## Requirements
+- Python 3
+  - `numpy`
+  - `pandas`
+  - `nltk`
+  - `wordcloud`
+  - `fasttext`
+  - `sklearn`
+  - `pytorch`
+  - `matplotlib` and `seaborn`
+## Usage
 
-1. Construct Features for the Training Texts: Load the training tweets and the built GloVe word embeddings. Using the word embeddings, construct a feature representation of each training tweet (by averaging the word vectors over all words of the tweet).
+Place the data in the `data` folder. The data, as well as the embeddings we trained can be downloaded [here](https://drive.google.com/file/d/1YQP_vVieTj4LGfx3lJvpvsEHCVRBfhPf/view?usp=sharing).
 
-2. Train a Linear Classifier: Train a linear classifier (e.g. logistic regression or SVM) on your constructed features, using the scikit learn library, or your own code from the earlier labs. Recall that the labels indicate if a tweet used to contain a :) or :( smiley.
+In order to generate our final submission file, you have to run : 
 
-3. Prediction: Predict labels for all tweets in the test set.
+```
+cd src
+python run.py
+```
 
-4. Submission / Evaluation: Submit your predictions to kaggle, and verify the obtained misclassification error score. (You can also use a local separate validation set to get faster feedback on the accuracy of your system). Try to tune your system for best evaluation score.
+This will generate the `src/submission.csv` file.
 
-## Extensions:
-Naturally, there are many ways to improve your solution, both in terms of accuracy and computation speed. More advanced techniques can be found in the recent literature.
+## Results
+Our best model is an ensemble of fastText, LSTM and GRU classifiers. It yielded a classification accuracy of 88.6% on AIcrowd (and a $F1$ score of 88%).
+
+Please note that since it is not possible to set a seed in fastText, the outputs may vary slightly.
+
+For more details, please read the `report.pdf` file.
