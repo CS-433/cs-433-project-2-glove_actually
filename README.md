@@ -113,5 +113,3 @@ This will generate the `src/submission.csv` file.
 Our best model is an ensemble of fastText, LSTM and GRU classifiers. It yielded a classification accuracy of 88.6% on AIcrowd (and an F1-score of 88.8%).
 
 Please note that since it is not possible to set a seed in fastText, the outputs may vary slightly.
-
-For more details, please read the `report.pdf` file.
