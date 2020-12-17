@@ -76,14 +76,13 @@ This repository contains code used for building a classifier for text sentiment 
 - `get_embeddings.py`: executing this script from the command line will train GloVe embeddings on the preprocessed dataset 
 - `build_vocab.sh`, `cooc.py`, `cut_vocab.sh`, `pickle_vocab.py`, `glove_solution.py`: scripts for training GloVe embeddings;produce the `embeddings.txt` once executed
 - `cooc.pkl`, `vocab.pkl`, `vocab_cut.txt`, ` vocab_full.txt`: intermediate files for training GloVe embeddings
--  `load.py`: helper files for loading datasets and outputing predictions
-- `predict_helpers.py`: helper files for making predictions for the best model
+-  `load.py`: helper functions for loading datasets and outputing predictions
+- `predict_helpers.py`: helper functions for making predictions for the best model
 - `preprocessing.py`: methods for preprocessing
 - `representations.py`: methods for generating and mapping GloVe embeddings
 - `rnn.py`: methods for training RNNs and predicting their outputs
 - `rnn_classifier.py`: defines the recurrent neural network class
 - `run.py`: script to produce our best submission
-
 
 
 ## Requirements
@@ -96,6 +95,7 @@ This repository contains code used for building a classifier for text sentiment 
   - `sklearn`
   - `pytorch`
   - `matplotlib` and `seaborn`
+  
 ## Usage
 
 Place the data in the `data` folder. The data, as well as the embeddings we trained can be downloaded [here](https://drive.google.com/file/d/1YQP_vVieTj4LGfx3lJvpvsEHCVRBfhPf/view?usp=sharing).
@@ -110,7 +110,7 @@ python run.py
 This will generate the `src/submission.csv` file.
 
 ## Results
-Our best model is an ensemble of fastText, LSTM and GRU classifiers. It yielded a classification accuracy of 88.6% on AIcrowd (and a $F1$ score of 88%).
+Our best model is an ensemble of fastText, LSTM and GRU classifiers. It yielded a classification accuracy of 88.6% on AIcrowd (and an F1-score of 88%).
 
 Please note that since it is not possible to set a seed in fastText, the outputs may vary slightly.
 
